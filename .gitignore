@@ -1,0 +1,11 @@
+DerivedData/
+*.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+*.xcodeproj/project.xcworkspace/xcuserdata/*.xcuserdatad/
+*.xcodeproj/xcuserdata/*
+*.xcworkspace/xcuserdata/
+Pods/
+.DS_Store
+.idea
+#UHP
+*.xcodeproj/project.xcworkspace/xcshareddata/herbalife.xcscmblueprint
+Podfile.lock
