@@ -8,6 +8,7 @@
 
 import Foundation
 import RxSwift
+import RxKingfisher
 import Kingfisher
 
 protocol ImageDownloadable {
@@ -23,22 +24,10 @@ class ImageDownloader: ImageDownloadable {
     }
 
     func image(forName name: String) -> Single<UIImage> {
-        return Single.create { single in
-
-            if let url = self.imageURL(forName: name) {
-                KingfisherManager.shared.retrieveImage(with: url) { result in
-                    switch result {
-                    case .success(let value):
-                        single(.success(value.image))
-                    case .failure(let error):
-                        single(.error(error))
-                    }
-                }
-            } else {
-                single(.error(RequestError.serviceUnavailable))
-            }
-
-            return Disposables.create()
+        guard let url = imageURL(forName: name) else {
+            return Single.error(RequestError.serviceUnavailable)
         }
+        
+        return KingfisherManager.shared.rx.retrieveImage(with: url)
     }
 }

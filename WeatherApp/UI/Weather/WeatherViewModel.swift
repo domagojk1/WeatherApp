@@ -99,7 +99,7 @@ class WeatherViewModel {
 
         let weatherCity = weatherDataEvent.map { $0!.name }
 
-        showForecast = chooseForecast.withLatestFrom(weatherCity.asObservable())
+        showForecast = chooseForecast.withLatestFrom(weatherCity)
 
         self.weatherModel = weatherDataEvent.map { WeatherModel(weatherData: $0!) }
 

@@ -8,6 +8,7 @@ target 'WeatherApp' do
   pod 'RxCocoa'
   pod 'Moya/RxSwift'
   pod 'Kingfisher'
+  pod 'RxKingfisher'
 
     post_install do |installer|
        installer.pods_project.targets.each do |target|
