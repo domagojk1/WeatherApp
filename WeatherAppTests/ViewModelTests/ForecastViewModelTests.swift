@@ -113,8 +113,3 @@ class ForecastViewModelTests: XCTestCase {
         expect(didFailObserver.events).to(equal(correctEvents))
     }
 }
-
-extension ForecastViewModelTests {
-
-    
-}
