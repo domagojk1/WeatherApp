@@ -8,11 +8,11 @@
 
 import Foundation
 
-struct Forecast: Decodable {
+struct Forecast: Decodable, Equatable {
     let list: [ForecastListItem]
 }
 
-struct ForecastListItem: Decodable {
+struct ForecastListItem: Decodable, Equatable {
     let timestamp: Int
     let main: MainData
     let wind: WindData
@@ -21,5 +21,9 @@ struct ForecastListItem: Decodable {
     private enum CodingKeys : String, CodingKey {
         case timestamp = "dt"
         case main, wind, weather
+    }
+
+    static func == (lhs: ForecastListItem, rhs: ForecastListItem) -> Bool {
+        return lhs.timestamp == rhs.timestamp
     }
 }

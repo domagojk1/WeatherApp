@@ -10,7 +10,7 @@ import Foundation
 import RxSwift
 import UIKit
 
-struct AlertMessage {
+struct AlertMessage: Equatable {
     let title: String
     let message: String
     let dismissTitle: String

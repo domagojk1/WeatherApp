@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Weather: Decodable {
+struct Weather: Decodable, Equatable {
     let name: String
     let weather: [WeatherData]
     let main: MainData
@@ -18,6 +18,10 @@ struct Weather: Decodable {
     private enum CodingKeys : String, CodingKey {
         case timestamp = "dt"
         case name, weather, main, wind
+    }
+
+    static func == (lhs: Weather, rhs: Weather) -> Bool {
+        return lhs.timestamp == rhs.timestamp
     }
 }
 

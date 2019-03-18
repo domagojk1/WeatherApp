@@ -11,6 +11,7 @@ import RxSwift
 import RxCocoa
 
 class ForecastCellViewModel {
+    private let forecast: DailyForecast
 
     // Outputs
     
@@ -20,7 +21,7 @@ class ForecastCellViewModel {
     let image: Driver<UIImage>
 
     init(forecastItem: ForecastListItem, imageDownloader: ImageDownloadable = ImageDownloader()) {
-        let forecast = DailyForecast(forecast: forecastItem)
+        forecast = DailyForecast(forecast: forecastItem)
 
         temperature = Driver.just("\(forecast.maxTemperature) / \(forecast.minTemperature) °C")
         description = Driver.just(forecast.description)
@@ -29,5 +30,12 @@ class ForecastCellViewModel {
         self.image = imageDownloader
             .image(forName: forecast.icon)
             .asDriver(onErrorJustReturn: UIImage.weatherImagePlaceholder)
+    }
+}
+
+extension ForecastCellViewModel: Equatable {
+
+    static func == (lhs: ForecastCellViewModel, rhs: ForecastCellViewModel) -> Bool {
+        return lhs.forecast == rhs.forecast
     }
 }

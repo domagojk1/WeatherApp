@@ -36,6 +36,8 @@
 		CD76E1402237DD370053DE4D /* BaseController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD76E13F2237DD370053DE4D /* BaseController.swift */; };
 		CD76E1452237EEF60053DE4D /* ForecastCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD76E1432237EEF60053DE4D /* ForecastCell.swift */; };
 		CD76E1462237EEF60053DE4D /* ForecastCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD76E1442237EEF60053DE4D /* ForecastCell.xib */; };
+		CD86A4B1223F8A8F002D2EFF /* ForecastViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD86A4B0223F8A8F002D2EFF /* ForecastViewModelTests.swift */; };
+		CD86A4B5223FE285002D2EFF /* Decoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD86A4B4223FE285002D2EFF /* Decoded.swift */; };
 		CDB1C31D22365F8500B74E0B /* NetworkingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDB1C31C22365F8500B74E0B /* NetworkingTests.swift */; };
 		CDB1C31F223660B000B74E0B /* NetworkingMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDB1C31E223660B000B74E0B /* NetworkingMocks.swift */; };
 		CDB1C32122368B0100B74E0B /* ImageDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDB1C32022368B0100B74E0B /* ImageDownloader.swift */; };
@@ -93,6 +95,8 @@
 		CD76E13F2237DD370053DE4D /* BaseController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseController.swift; sourceTree = "<group>"; };
 		CD76E1432237EEF60053DE4D /* ForecastCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastCell.swift; sourceTree = "<group>"; };
 		CD76E1442237EEF60053DE4D /* ForecastCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ForecastCell.xib; sourceTree = "<group>"; };
+		CD86A4B0223F8A8F002D2EFF /* ForecastViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastViewModelTests.swift; sourceTree = "<group>"; };
+		CD86A4B4223FE285002D2EFF /* Decoded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Decoded.swift; sourceTree = "<group>"; };
 		CDB1C31C22365F8500B74E0B /* NetworkingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingTests.swift; sourceTree = "<group>"; };
 		CDB1C31E223660B000B74E0B /* NetworkingMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingMocks.swift; sourceTree = "<group>"; };
 		CDB1C32022368B0100B74E0B /* ImageDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDownloader.swift; sourceTree = "<group>"; };
@@ -183,11 +187,10 @@
 		CD4299BA222FEC1D002F0F63 /* WeatherAppTests */ = {
 			isa = PBXGroup;
 			children = (
-				CD4299BB222FEC1D002F0F63 /* WeatherViewModelTests.swift */,
-				CDB1C31C22365F8500B74E0B /* NetworkingTests.swift */,
-				CDB1C31E223660B000B74E0B /* NetworkingMocks.swift */,
+				CD86A4AD223F8A39002D2EFF /* Mocks */,
+				CD86A4AC223F8A25002D2EFF /* NetworkingTests */,
+				CD86A4AB223F8A1A002D2EFF /* ViewModelTests */,
 				CD4299BD222FEC1D002F0F63 /* Info.plist */,
-				CD76E12F2237A5840053DE4D /* ImageDownloaderMock.swift */,
 			);
 			path = WeatherAppTests;
 			sourceTree = "<group>";
@@ -293,6 +296,33 @@
 				CD76E13F2237DD370053DE4D /* BaseController.swift */,
 			);
 			path = Base;
+			sourceTree = "<group>";
+		};
+		CD86A4AB223F8A1A002D2EFF /* ViewModelTests */ = {
+			isa = PBXGroup;
+			children = (
+				CD4299BB222FEC1D002F0F63 /* WeatherViewModelTests.swift */,
+				CD86A4B0223F8A8F002D2EFF /* ForecastViewModelTests.swift */,
+			);
+			path = ViewModelTests;
+			sourceTree = "<group>";
+		};
+		CD86A4AC223F8A25002D2EFF /* NetworkingTests */ = {
+			isa = PBXGroup;
+			children = (
+				CDB1C31C22365F8500B74E0B /* NetworkingTests.swift */,
+			);
+			path = NetworkingTests;
+			sourceTree = "<group>";
+		};
+		CD86A4AD223F8A39002D2EFF /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				CD76E12F2237A5840053DE4D /* ImageDownloaderMock.swift */,
+				CDB1C31E223660B000B74E0B /* NetworkingMocks.swift */,
+				CD86A4B4223FE285002D2EFF /* Decoded.swift */,
+			);
+			path = Mocks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -458,6 +488,7 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-WeatherAppTests/Pods-WeatherAppTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/RxAtomic/RxAtomic.framework",
 				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/Nimble/Nimble.framework",
 				"${BUILT_PRODUCTS_DIR}/RxBlocking/RxBlocking.framework",
 				"${BUILT_PRODUCTS_DIR}/RxTest/RxTest.framework",
 			);
@@ -465,6 +496,7 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxAtomic.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Nimble.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxBlocking.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxTest.framework",
 			);
@@ -532,7 +564,9 @@
 			files = (
 				CD76E1302237A5840053DE4D /* ImageDownloaderMock.swift in Sources */,
 				CD4299BC222FEC1D002F0F63 /* WeatherViewModelTests.swift in Sources */,
+				CD86A4B1223F8A8F002D2EFF /* ForecastViewModelTests.swift in Sources */,
 				CDB1C31D22365F8500B74E0B /* NetworkingTests.swift in Sources */,
+				CD86A4B5223FE285002D2EFF /* Decoded.swift in Sources */,
 				CDB1C31F223660B000B74E0B /* NetworkingMocks.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -9,30 +9,25 @@
 import XCTest
 import RxSwift
 import RxTest
-import RxBlocking
-import Moya
 import RxCocoa
+import Nimble
 @testable import WeatherApp
 
 class WeatherViewModelTests: XCTestCase {
 
     private var scheduler: TestScheduler!
     private var bag: DisposeBag!
+    
+    private var imageDownloader: ImageDownloaderMock!
+    private var openWeatherErrorClient: OpenWeatherClient!
 
     private var viewModel: WeatherViewModel!
-    private var imageDownloader: ImageDownloaderMock!
-
-    private var openWeatherErrorClient: OpenWeatherClient!
     private var viewModelWithErrorClient: WeatherViewModel!
 
     override func setUp() {
         bag = DisposeBag()
         scheduler = TestScheduler(initialClock: 0)
 
-        setupStubs()
-    }
-
-    private func setupStubs() {
         imageDownloader = ImageDownloaderMock()
         openWeatherErrorClient = NetworkingMocks.openWeatherImmediateErrorClient()
 
@@ -68,17 +63,18 @@ class WeatherViewModelTests: XCTestCase {
 
         viewModel.weatherModel.drive(weatherModelObservable).disposed(by: bag)
 
-        scheduler.start()
-
-        XCTAssertEqual(isLoadingObservable.events, [
+        let correctLoadingEvents = Recorded.events(
             .next(1, true),
             .next(2, false)
-            ])
+        )
 
-       XCTAssertEqual(weatherModelObservable.events.count, 1)
+        scheduler.start()
+
+        expect(isLoadingObservable.events).to(equal(correctLoadingEvents))
+        expect(weatherModelObservable.events.count).to(equal(1))
     }
 
-    func testDataNotAvailableWithInitialCity() {
+    func testIsDataNotAvailableWithInitialCity() {
         SharingScheduler.mock(scheduler: scheduler) {
             viewModelWithErrorClient = WeatherViewModel(initialCity: "London",
                                          openWeatherClient: openWeatherErrorClient,
@@ -94,14 +90,15 @@ class WeatherViewModelTests: XCTestCase {
 
         viewModelWithErrorClient.weatherModel.drive(weatherModelObservable).disposed(by: bag)
 
-        scheduler.start()
-
-        XCTAssertEqual(isLoadingObservable.events, [
+        let correctLoadingEvents = Recorded.events(
             .next(1, true),
             .next(2, false)
-            ])
+        )
 
-        XCTAssertTrue(weatherModelObservable.events.isEmpty)
+        scheduler.start()
+
+        expect(isLoadingObservable.events).to(equal(correctLoadingEvents))
+        expect(weatherModelObservable.events).to(beEmpty())
     }
 
     func testIsLoadingWhenSearching() {
@@ -115,19 +112,21 @@ class WeatherViewModelTests: XCTestCase {
             .bind(to: viewModel.city)
             .disposed(by: bag)
 
-        scheduler.start()
-
-        XCTAssertEqual(isLoadingObservable.events, [
+        let correctLoadingEvents = Recorded.events(
             .next(3, true),
             .next(4, false),
             .next(7, true),
             .next(8, false),
             .next(12, true),
             .next(13, false)
-            ])
+        )
+
+        scheduler.start()
+
+        expect(isLoadingObservable.events).to(equal(correctLoadingEvents))
     }
 
-    func testIsNotLoadingWhenSameCitySearched() {
+    func testIsNotLoadingWhenSearchingSameCity() {
         let isLoadingObservable = scheduler.createObserver(Bool.self)
 
         viewModel.isLoading.drive(isLoadingObservable).disposed(by: bag)
@@ -137,12 +136,14 @@ class WeatherViewModelTests: XCTestCase {
             .bind(to: viewModel.city)
             .disposed(by: bag)
 
-        scheduler.start()
-
-        XCTAssertEqual(isLoadingObservable.events, [
+        let correctLoadingEvents = Recorded.events(
             .next(3, true),
             .next(4, false)
-            ])
+        )
+
+        scheduler.start()
+
+        expect(isLoadingObservable.events).to(equal(correctLoadingEvents))
     }
 
     func testIsNotLoadingWhenIntervalNotSatisfied() {
@@ -156,15 +157,17 @@ class WeatherViewModelTests: XCTestCase {
             .bind(to: viewModel.city)
             .disposed(by: bag)
 
-        scheduler.start()
-
-        XCTAssertEqual(isLoadingObservable.events, [
+        let correctLoadingEvents = Recorded.events(
             .next(4, true),
             .next(5, false)
-            ])
+        )
+
+        scheduler.start()
+
+        expect(isLoadingObservable.events).to(equal(correctLoadingEvents))
     }
 
-    func testWeatherSearchHasNotFailed() {
+    func testIfDidFailIsEmpty() {
         let didFailObservable = scheduler.createObserver(AlertMessage.self)
 
         viewModel.didFail.drive(didFailObservable).disposed(by: bag)
@@ -176,10 +179,10 @@ class WeatherViewModelTests: XCTestCase {
 
         scheduler.start()
 
-        XCTAssertTrue(didFailObservable.events.isEmpty)
+        expect(didFailObservable.events).to(beEmpty())
     }
 
-    func testWeatherSearchHasFailed() {
+    func testDidFail() {
         let didFailObservable = scheduler.createObserver(AlertMessage.self)
 
         viewModelWithErrorClient.didFail.drive(didFailObservable).disposed(by: bag)
@@ -191,13 +194,15 @@ class WeatherViewModelTests: XCTestCase {
 
         scheduler.start()
 
-        XCTAssertEqual(didFailObservable.events[0].value.element!.title, WeatherViewModel.weatherUnavailableMessage.title)
-        XCTAssertEqual(didFailObservable.events[0].time, 3)
-        XCTAssertEqual(didFailObservable.events[1].value.element!.title, WeatherViewModel.weatherUnavailableMessage.title)
-        XCTAssertEqual(didFailObservable.events[1].time, 8)
+        let correctFailedEvents = Recorded.events(
+            .next(3, WeatherViewModel.weatherUnavailableMessage),
+            .next(8, WeatherViewModel.weatherUnavailableMessage)
+        )
+
+        expect(didFailObservable.events).to(equal(correctFailedEvents))
     }
 
-    func testWeatherImageAvailable() {
+    func testIsWeatherImageAvailable() {
         imageDownloader.shouldFail = false
 
         let imageObservable = scheduler.createObserver(UIImage.self)
@@ -210,10 +215,14 @@ class WeatherViewModelTests: XCTestCase {
 
         scheduler.start()
 
-        XCTAssertEqual(imageObservable.events, [.next(5, imageDownloader.downloadedImage)])
+        let correctImageEvents = Recorded.events(
+            .next(5, imageDownloader.downloadedImage)
+        )
+
+        expect(imageObservable.events).to(equal(correctImageEvents))
     }
 
-    func testWeatherImageShouldShowPlaceholderWhenFailed() {
+    func testIsWeatherImageWithPlaceholder() {
         imageDownloader.shouldFail = true
 
         let imageObservable = scheduler.createObserver(UIImage.self)
@@ -228,10 +237,10 @@ class WeatherViewModelTests: XCTestCase {
 
         let weatherImage = imageObservable.events.first?.value.element
 
-        XCTAssertEqual(weatherImage?.pngData(), UIImage.weatherImagePlaceholder.pngData())
+        expect(weatherImage?.pngData()).to(equal(UIImage.weatherImagePlaceholder.pngData()))
     }
 
-    func testWeatherImageShouldNotBeAvailable() {
+    func testIsWeatherImageUnavailable() {
         let imageObservable = scheduler.createObserver(UIImage.self)
 
         viewModelWithErrorClient.weatherImage.drive(imageObservable).disposed(by: bag)
@@ -242,6 +251,6 @@ class WeatherViewModelTests: XCTestCase {
 
         scheduler.start()
 
-        XCTAssertEqual(imageObservable.events, [])
+        expect(imageObservable.events).to(beEmpty())
     }
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct DailyForecast {
+struct DailyForecast: Equatable {
     let maxTemperature: String
     let minTemperature: String
     let description: String

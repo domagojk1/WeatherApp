@@ -49,7 +49,7 @@ class ForecastViewModel {
             .asDriver(onErrorJustReturn: .error)
             .startWith(.loading)
 
-        dailyForecast = forecastEvent
+        self.dailyForecast = forecastEvent
             .map {
                 switch $0 {
                 case .forecastData(let forecast):
@@ -58,6 +58,7 @@ class ForecastViewModel {
                     return []
                 }
             }
+            .filter { !$0.isEmpty }
 
         self.isLoading = forecastEvent
             .map {
