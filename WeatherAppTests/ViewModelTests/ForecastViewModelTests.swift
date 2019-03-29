@@ -47,18 +47,17 @@ class ForecastViewModelTests: XCTestCase {
     override func tearDown() {
     }
 
-    func testIsForecastDataAvailable() throws {
+    func testIsForecastDataAvailable() {
         let forecastObserver = scheduler.createObserver([ForecastCellViewModel].self)
 
         viewModel.dailyForecast.drive(forecastObserver).disposed(by: bag)
 
         let correctEvents = Recorded.events(
-            .next(1, Decoded.expectedCellViewModels),
-            .completed(2)
+            next(1, Decoded.expectedCellViewModels),
+            completed(2)
         )
 
         scheduler.start()
-
         expect(forecastObserver.events).to(equal(correctEvents))
     }
 

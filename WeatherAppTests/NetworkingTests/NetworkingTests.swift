@@ -22,9 +22,14 @@ class NetworkingTests: XCTestCase {
     override func tearDown() {
     }
 
+    func testWeatherSuccess() {
+        
+    }
+
     func testIsWeatherRequestSuccessful() throws {
         guard let result = try openWeatherClient.weather(for: "London").toBlocking().first() else {
-            preconditionFailure("OpenWeatherClient test failed: data unavailable.")
+            fail("OpenWeatherClient test failed: data unavailable.")
+            return
         }
 
         switch result {
@@ -37,7 +42,8 @@ class NetworkingTests: XCTestCase {
 
     func testDidWeatherRequestFail() throws {
         guard let result = try openWeatherErrorClient.weather(for: "London").toBlocking().first() else {
-            preconditionFailure("OpenWeatherClient test failed: data unavailable.")
+            fail("OpenWeatherClient test failed: data unavailable.")
+            return
         }
 
         switch result {
@@ -50,7 +56,8 @@ class NetworkingTests: XCTestCase {
 
     func testIsForecastRequestSuccessful() throws {
         guard let result = try openWeatherClient.forecast(for: "London").toBlocking().first() else {
-            preconditionFailure("OpenWeatherClient test failed: data unavailable.")
+            fail("OpenWeatherClient test failed: data unavailable.")
+            return
         }
 
         switch result {
@@ -63,7 +70,8 @@ class NetworkingTests: XCTestCase {
 
     func testDidForecastRequestFail() throws {
         guard let result = try openWeatherErrorClient.forecast(for: "London").toBlocking().first() else {
-            preconditionFailure("OpenWeatherClient test failed: data unavailable.")
+            fail("OpenWeatherClient test failed: data unavailable.")
+            return
         }
 
         switch result {
