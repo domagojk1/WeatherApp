@@ -19,41 +19,17 @@ class WeatherViewModelTests: XCTestCase {
     private var bag: DisposeBag!
     
     private var imageDownloader: ImageDownloaderMock!
-    private var openWeatherErrorClient: OpenWeatherClient!
-
     private var viewModel: WeatherViewModel!
     private var viewModelWithErrorClient: WeatherViewModel!
 
     override func setUp() {
         bag = DisposeBag()
         scheduler = TestScheduler(initialClock: 0)
-
         imageDownloader = ImageDownloaderMock()
-        openWeatherErrorClient = NetworkingMocks.openWeatherImmediateErrorClient()
-
-        SharingScheduler.mock(scheduler: scheduler) {
-            viewModel = WeatherViewModel(initialCity: "",
-                                         openWeatherClient: NetworkingMocks.openWeatherImmediateClient,
-                                         scheduler: scheduler,
-                                         imageDownloader: imageDownloader)
-
-            viewModelWithErrorClient = WeatherViewModel(initialCity: "",
-                                                        openWeatherClient: openWeatherErrorClient,
-                                                        scheduler: scheduler,
-                                                        imageDownloader: imageDownloader)
-        }
-    }
-
-    override func tearDown() {
     }
 
     func testIsDataAvailableWithInitialCity() {
-        SharingScheduler.mock(scheduler: scheduler) {
-            viewModel = WeatherViewModel(initialCity: "London",
-                                         openWeatherClient: NetworkingMocks.openWeatherImmediateClient,
-                                         scheduler: scheduler,
-                                         imageDownloader: imageDownloader)
-        }
+        mockViewModel(with: "London")
 
         let isLoadingObservable = scheduler.createObserver(Bool.self)
 
@@ -75,12 +51,7 @@ class WeatherViewModelTests: XCTestCase {
     }
 
     func testIsDataNotAvailableWithInitialCity() {
-        SharingScheduler.mock(scheduler: scheduler) {
-            viewModelWithErrorClient = WeatherViewModel(initialCity: "London",
-                                         openWeatherClient: openWeatherErrorClient,
-                                         scheduler: scheduler,
-                                         imageDownloader: imageDownloader)
-        }
+        mockErrorViewModel(with: "London")
 
         let isLoadingObservable = scheduler.createObserver(Bool.self)
 
@@ -102,6 +73,8 @@ class WeatherViewModelTests: XCTestCase {
     }
 
     func testIsLoadingWhenSearching() {
+        mockViewModel()
+
         let isLoadingObservable = scheduler.createObserver(Bool.self)
 
         viewModel.isLoading.drive(isLoadingObservable).disposed(by: bag)
@@ -127,6 +100,8 @@ class WeatherViewModelTests: XCTestCase {
     }
 
     func testIsNotLoadingWhenSearchingSameCity() {
+        mockViewModel()
+
         let isLoadingObservable = scheduler.createObserver(Bool.self)
 
         viewModel.isLoading.drive(isLoadingObservable).disposed(by: bag)
@@ -147,6 +122,8 @@ class WeatherViewModelTests: XCTestCase {
     }
 
     func testIsNotLoadingWhenIntervalNotSatisfied() {
+        mockViewModel()
+
         let isLoadingObservable = scheduler.createObserver(Bool.self)
 
         viewModel.isLoading.drive(isLoadingObservable).disposed(by: bag)
@@ -168,6 +145,8 @@ class WeatherViewModelTests: XCTestCase {
     }
 
     func testIfDidFailIsEmpty() {
+        mockViewModel()
+
         let didFailObservable = scheduler.createObserver(AlertMessage.self)
 
         viewModel.didFail.drive(didFailObservable).disposed(by: bag)
@@ -183,6 +162,8 @@ class WeatherViewModelTests: XCTestCase {
     }
 
     func testDidFail() {
+        mockErrorViewModel()
+
         let didFailObservable = scheduler.createObserver(AlertMessage.self)
 
         viewModelWithErrorClient.didFail.drive(didFailObservable).disposed(by: bag)
@@ -203,6 +184,7 @@ class WeatherViewModelTests: XCTestCase {
     }
 
     func testIsWeatherImageAvailable() {
+        mockViewModel()
         imageDownloader.shouldFail = false
 
         let imageObservable = scheduler.createObserver(UIImage.self)
@@ -223,6 +205,7 @@ class WeatherViewModelTests: XCTestCase {
     }
 
     func testIsWeatherImageWithPlaceholder() {
+        mockViewModel()
         imageDownloader.shouldFail = true
 
         let imageObservable = scheduler.createObserver(UIImage.self)
@@ -241,6 +224,8 @@ class WeatherViewModelTests: XCTestCase {
     }
 
     func testIsWeatherImageUnavailable() {
+        mockErrorViewModel()
+
         let imageObservable = scheduler.createObserver(UIImage.self)
 
         viewModelWithErrorClient.weatherImage.drive(imageObservable).disposed(by: bag)
@@ -252,5 +237,26 @@ class WeatherViewModelTests: XCTestCase {
         scheduler.start()
 
         expect(imageObservable.events).to(beEmpty())
+    }
+}
+
+extension WeatherViewModelTests {
+
+    private func mockViewModel(with city: String = "") {
+        SharingScheduler.mock(scheduler: scheduler) {
+            viewModel = WeatherViewModel(initialCity: city,
+                                         openWeatherClient: NetworkingMocks.openWeatherImmediateClient,
+                                         scheduler: scheduler,
+                                         imageDownloader: imageDownloader)
+        }
+    }
+
+    private func mockErrorViewModel(with city: String = "") {
+        SharingScheduler.mock(scheduler: scheduler) {
+            viewModelWithErrorClient = WeatherViewModel(initialCity: city,
+                                         openWeatherClient: NetworkingMocks.openWeatherImmediateErrorClient(),
+                                         scheduler: scheduler,
+                                         imageDownloader: imageDownloader)
+        }
     }
 }
